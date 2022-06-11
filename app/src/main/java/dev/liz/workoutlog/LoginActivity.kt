@@ -12,9 +12,9 @@ class LoginActivity : AppCompatActivity() {
     lateinit var btnLogin:Button
     lateinit var tilEmail:TextInputLayout
     lateinit var tilPassword:TextInputLayout
-    lateinit var etMyemail:TextInputEditText
+    lateinit var etMail:TextInputEditText
     lateinit var etPassword:TextInputEditText
-    lateinit var etSignin:TextView
+    lateinit var etSign:TextView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
@@ -22,27 +22,37 @@ class LoginActivity : AppCompatActivity() {
         btnLogin=findViewById(R.id.btnLogin)
         tilEmail=findViewById(R.id.tilEmail)
         tilPassword=findViewById(R.id.tilPassword)
-        etMyemail=findViewById(R.id.etMyemail)
+        etMail=findViewById(R.id.etMail)
         etPassword=findViewById(R.id.etPassword)
-        etSignin=findViewById(R.id.etSignin)
-        etSignin.setOnClickListener {
+        etSign=findViewById(R.id.etSign)
+        etSign.setOnClickListener {
             var intent=Intent(this,SignupActivity::class.java)
             startActivity(intent)
         }
 
         btnLogin.setOnClickListener {
             ValidateLogin()
+//            var intent=Intent(this,HomeActivity::class.java)
+//            startActivity(intent)
+
 
         }
     }
     fun ValidateLogin(){
-        var email=etMyemail.text.toString()
+        var email=etMail.text.toString()
         var password=etPassword.text.toString()
+        var error=false
         if (email.isBlank()) {
             tilEmail.error = "Email is required"
+            error=true
         }
         if(password.isBlank()){
             tilPassword.error="Password is required"
+            error=true
+        }
+        if (!error){
+            startActivity(Intent(this,HomeActivity::class.java))
+            finish()
         }
     }
 

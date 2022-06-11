@@ -67,7 +67,7 @@ class SignupActivity : AppCompatActivity() {
         if (password.isBlank()) {
             tilPassword2.error = "Please enter password"
         }
-        if (comfirm.isBlank()) {
+        if (comfirm!=password) {
             tilComfirm.error = "Email does not Match"
         }
     }
