@@ -1,10 +1,10 @@
-package dev.liz.workoutlog
+package dev.liz.workoutlog.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Button
 import androidx.fragment.app.FragmentContainerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import dev.liz.workoutlog.R
 
 class HomeActivity : AppCompatActivity() {
     lateinit var fcvHome: FragmentContainerView
