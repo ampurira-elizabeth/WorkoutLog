@@ -7,8 +7,8 @@ import android.widget.Toast
 import dev.liz.workoutlog.databinding.ActivitySignupBinding
 import dev.liz.workoutlog.models.RegisterRequest
 import dev.liz.workoutlog.models.RegisterResponse
-import dev.liz.workoutlog.retrofit.ApiClient
-import dev.liz.workoutlog.retrofit.ApiInterface
+import dev.liz.workoutlog.api.ApiClient
+import dev.liz.workoutlog.api.ApiInterface
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

@@ -1,4 +1,4 @@
-package dev.liz.workoutlog.retrofit
+package dev.liz.workoutlog.api
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

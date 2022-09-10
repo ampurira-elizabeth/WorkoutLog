@@ -6,11 +6,14 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.activity.viewModels
+import androidx.lifecycle.Observer
 import dev.liz.workoutlog.databinding.ActivityLoginBinding
 import dev.liz.workoutlog.models.LoginRequest
 import dev.liz.workoutlog.models.LoginResponse
-import dev.liz.workoutlog.retrofit.ApiClient
-import dev.liz.workoutlog.retrofit.ApiInterface
+import dev.liz.workoutlog.api.ApiClient
+import dev.liz.workoutlog.api.ApiInterface
+import dev.liz.workoutlog.viewmodel.UserViewModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -18,6 +21,7 @@ import retrofit2.Response
 class LoginActivity : AppCompatActivity() {
     lateinit var binding: ActivityLoginBinding
     lateinit var sharePrefs:SharedPreferences
+    val userViewModel:UserViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,6 +38,21 @@ class LoginActivity : AppCompatActivity() {
             ValidateLogin()
         }
     }
+
+    override fun onResume() {
+        super.onResume()
+        userViewModel.loginResponseLiveData.observe(this, Observer{loginResponse ->
+            saveLoginDetails(loginResponse!!)
+            Toast.makeText(baseContext,loginResponse?.message,Toast.LENGTH_LONG).show()
+            startActivity(Intent(baseContext,HomeActivity::class.java))
+            finish()
+        })
+        userViewModel.loginErrorLiveData.observe(this, Observer{ error ->
+            Toast.makeText(baseContext,error,Toast.LENGTH_LONG).show()
+        })
+
+    }
+
     fun ValidateLogin() {
         var email = binding.etMail.text.toString()
         var password = binding.etPassword.text.toString()
@@ -49,38 +68,10 @@ class LoginActivity : AppCompatActivity() {
         if (!error) {
             binding.pbLogin.visibility= View.VISIBLE
             val loginRequest=LoginRequest(email,password)
-
-            makeLoginRequest(loginRequest)
-
+             userViewModel.loginUser(loginRequest)
         }
     }
-    fun makeLoginRequest(loginRequest: LoginRequest){
-        var apiClient=ApiClient.buildApiClient(ApiInterface::class.java)
-        val request=apiClient.login(loginRequest)
-        request.enqueue(object : Callback<LoginResponse> {
-            override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
-                binding.pbLogin.visibility= View.GONE
 
-                if (response. isSuccessful){
-                    val loginResponse=response.body()
-                    saveLoginDetails(loginResponse!!)
-                      Toast.makeText(baseContext,loginResponse?.message,Toast.LENGTH_LONG).show()
-                      startActivity(Intent(baseContext,HomeActivity::class.java))
-                    finish()
-                  }
-                else{
-                    var error=response.errorBody()?.string()
-                      Toast.makeText(baseContext,error,Toast.LENGTH_LONG).show()
-                  }
-            }
-
-            override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
-                binding.pbLogin.visibility= View.GONE
-                Toast.makeText(baseContext,t.message,Toast.LENGTH_LONG).show()
-
-            }
-        })
-    }
     fun saveLoginDetails(loginResponse:LoginResponse){
         val editor= sharePrefs.edit()
         editor.putString("ACCESS_TOKEN",loginResponse.accessToken)
