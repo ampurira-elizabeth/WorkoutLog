@@ -18,7 +18,6 @@ class HomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
-//        castViews()
         setupBottomNav()
 
         binding.tvLog.setOnClickListener {
@@ -32,12 +31,6 @@ class HomeActivity : AppCompatActivity() {
     }
     }
 
-
-//    fun castViews() {
-//        binding.fcvHome = findViewById(R.id.fcvHome)
-//       binding. bnvHome = findViewById(R.id.bnvHome)
-//
-//    }
 
     fun setupBottomNav() {
        binding.bnvHome.setOnItemSelectedListener { item ->

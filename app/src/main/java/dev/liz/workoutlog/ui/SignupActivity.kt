@@ -4,11 +4,14 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.activity.viewModels
+import androidx.lifecycle.Observer
 import dev.liz.workoutlog.databinding.ActivitySignupBinding
 import dev.liz.workoutlog.models.RegisterRequest
 import dev.liz.workoutlog.models.RegisterResponse
 import dev.liz.workoutlog.api.ApiClient
 import dev.liz.workoutlog.api.ApiInterface
+import dev.liz.workoutlog.viewmodel.UserViewModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -16,6 +19,7 @@ import retrofit2.Response
 
 class SignupActivity : AppCompatActivity() {
     lateinit var binding: ActivitySignupBinding
+    val userViewModel: UserViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySignupBinding.inflate(layoutInflater)
@@ -30,6 +34,7 @@ class SignupActivity : AppCompatActivity() {
             validate()
         }
     }
+
     fun validate(){
         var firstname= binding.etFirstname.text.toString()
         var secondname= binding.etSecondname.text.toString()
@@ -65,33 +70,23 @@ class SignupActivity : AppCompatActivity() {
         }
         if(!error) {
             val registerRequest = RegisterRequest(firstname,secondname,phone,email,password)
-            makeRegistrationRequest(registerRequest)
-            startActivity(Intent(this,LoginActivity::class.java))
+            userViewModel.registerUser(registerRequest)
 
         }
     }
-    fun makeRegistrationRequest(registerRequest: RegisterRequest){
-        var apiClient=ApiClient.buildApiClient(ApiInterface::class.java)
-        var request=apiClient.registerUser(registerRequest)
-        request.enqueue(object : Callback<RegisterResponse>{
-            override fun onResponse(
-                call: Call<RegisterResponse>,
-                response: Response<RegisterResponse>
-            ) {
-               if (response.isSuccessful){
-                   var message= response.body()?.message
-                   Toast.makeText(baseContext,message,Toast.LENGTH_LONG).show()
-                   //intent to login
-               } else{
-                   val error=response.errorBody()?.string()
-                   Toast.makeText(baseContext,error,Toast.LENGTH_LONG).show()
-               }
-            }
-            override fun onFailure(call: Call<RegisterResponse>, t: Throwable) {
-                Toast.makeText(baseContext,t.message,Toast.LENGTH_LONG).show()
-            }
-        })
 
+    override fun onResume() {
+        super.onResume()
+        userViewModel.registerResponseLiveDate.observe(this, Observer { registerResponse->
+//            var message= response.body()?.message
+            Toast.makeText(baseContext,registerResponse.message,Toast.LENGTH_LONG).show()
+            startActivity(Intent(this,LoginActivity::class.java))
+
+        })
+        userViewModel.registerErrorLiveData.observe(this, Observer { error ->
+            Toast.makeText(baseContext,error,Toast.LENGTH_LONG).show()
+
+        })
     }
 
 }
