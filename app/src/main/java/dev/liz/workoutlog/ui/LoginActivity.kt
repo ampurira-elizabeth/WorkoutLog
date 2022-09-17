@@ -13,6 +13,7 @@ import dev.liz.workoutlog.models.LoginRequest
 import dev.liz.workoutlog.models.LoginResponse
 import dev.liz.workoutlog.api.ApiClient
 import dev.liz.workoutlog.api.ApiInterface
+import dev.liz.workoutlog.util.Constants
 import dev.liz.workoutlog.viewmodel.UserViewModel
 import retrofit2.Call
 import retrofit2.Callback
@@ -28,7 +29,7 @@ class LoginActivity : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        sharePrefs=getSharedPreferences("WORKOUTLOG_PREFS", MODE_PRIVATE)
+        sharePrefs=getSharedPreferences(Constants.prefsFile, MODE_PRIVATE)
 
         binding.etSign.setOnClickListener {
             var intent = Intent(this, SignupActivity::class.java)
@@ -74,9 +75,10 @@ class LoginActivity : AppCompatActivity() {
 
     fun saveLoginDetails(loginResponse:LoginResponse){
         val editor= sharePrefs.edit()
-        editor.putString("ACCESS_TOKEN",loginResponse.accessToken)
-        editor.putString("USER_ID",loginResponse.userId)
-        editor.putString("PROFILE_ID",loginResponse.profileId)
+        val token= "Bearer ${loginResponse.accessToken}"
+        editor.putString(Constants.accessToken,token)
+        editor.putString(Constants.userId,loginResponse.userId)
+        editor.putString(Constants.profileId,loginResponse.profileId)
         editor.apply()
 
 
